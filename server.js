@@ -43,16 +43,22 @@ router
       );
       ctx.body = servicesWithoutContent;
       return await next();
-    }, 100);
+    }, 1000);
   })
 
   .post('/api/services', async (ctx, next) => {
     return await responseWithDelay(async () => {
-      const { name, price } = ctx.request.body;
+      console.log(ctx.request.body);
+      const { name, price, content } = JSON.parse(ctx.request.body);
 
-      if (typeof name === 'string' && typeof price === 'number' && price >= 0) {
+      if (
+        typeof name === 'string' &&
+        typeof content === 'string' &&
+        typeof price === 'number' &&
+        price >= 10
+      ) {
         const id = uuid.v4();
-        const newService = { id, name, price };
+        const newService = { id, name, price, content };
         services.push(newService);
         ctx.body = newService;
       } else {
@@ -60,7 +66,7 @@ router
         ctx.body = { message: 'Invalid data' };
       }
       return await next();
-    }, 100);
+    }, 1000);
   })
 
   .get('/api/services/:id', async (ctx, next) => {
@@ -75,8 +81,23 @@ router
         ctx.body = { message: 'No services with such id' };
       }
       return await next();
-    }, 100);
+    }, 1000);
   })
+
+  // .put('/api/services/:id', async (ctx, next) => {
+  //   return await responseWithDelay(async () => {
+  //     const { id } = ctx.params;
+  //     const service = services.find((service) => service.id == id);
+
+  //     if (service) {
+  //       ctx.body = service;
+  //     } else {
+  //       ctx.status = 400;
+  //       ctx.body = { message: 'No services with such id' };
+  //     }
+  //     return await next();
+  //   }, 1000);
+  // })
 
   .delete('/api/services/:id', async (ctx, next) => {
     return await responseWithDelay(async () => {
