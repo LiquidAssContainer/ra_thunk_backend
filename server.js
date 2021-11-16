@@ -28,55 +28,70 @@ app.use(
   }),
 );
 
+async function responseWithDelay(callback, delay) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+  return await callback();
+}
+
 router
   .get('/api/services', async (ctx, next) => {
-    const servicesWithoutContent = services.map(
-      ({ content, ...service }) => service,
-    );
-    ctx.body = servicesWithoutContent;
-    return await next();
+    return await responseWithDelay(async () => {
+      const servicesWithoutContent = services.map(
+        ({ content, ...service }) => service,
+      );
+      ctx.body = servicesWithoutContent;
+      return await next();
+    }, 100);
   })
 
   .post('/api/services', async (ctx, next) => {
-    const { name, price } = ctx.request.body;
+    return await responseWithDelay(async () => {
+      const { name, price } = ctx.request.body;
 
-    if (typeof name === 'string' && typeof price === 'number' && price >= 0) {
-      const id = uuid.v4();
-      const newService = { id, name, price };
-      services.push(newService);
-      ctx.body = newService;
-    } else {
-      ctx.status = 400;
-      ctx.body = { message: 'Invalid data' };
-    }
-    return await next();
+      if (typeof name === 'string' && typeof price === 'number' && price >= 0) {
+        const id = uuid.v4();
+        const newService = { id, name, price };
+        services.push(newService);
+        ctx.body = newService;
+      } else {
+        ctx.status = 400;
+        ctx.body = { message: 'Invalid data' };
+      }
+      return await next();
+    }, 100);
   })
 
   .get('/api/services/:id', async (ctx, next) => {
-    const { id } = ctx.params;
-    const service = services.find((service) => service.id == id);
+    return await responseWithDelay(async () => {
+      const { id } = ctx.params;
+      const service = services.find((service) => service.id == id);
 
-    if (service) {
-      ctx.body = service;
-    } else {
-      ctx.status = 400;
-      ctx.body = { message: 'No services with such id' };
-    }
-    return await next();
+      if (service) {
+        ctx.body = service;
+      } else {
+        ctx.status = 400;
+        ctx.body = { message: 'No services with such id' };
+      }
+      return await next();
+    }, 100);
   })
 
   .delete('/api/services/:id', async (ctx, next) => {
-    const { id } = ctx.params;
-    const serviceIndex = services.findIndex((service) => service.id == id);
+    return await responseWithDelay(async () => {
+      const { id } = ctx.params;
+      const serviceIndex = services.findIndex((service) => service.id == id);
 
-    if (serviceIndex !== -1) {
-      services.splice(serviceIndex, 1);
-      ctx.status = 204;
-    } else {
-      ctx.status = 400;
-      ctx.body = { message: 'No services with such id' };
-    }
-    return await next();
+      if (serviceIndex !== -1) {
+        services.splice(serviceIndex, 1);
+        ctx.status = 204;
+      } else {
+        ctx.status = 400;
+        ctx.body = { message: 'No services with such id' };
+      }
+      return await next();
+    }, 100);
   });
 
 app.use(router.routes());

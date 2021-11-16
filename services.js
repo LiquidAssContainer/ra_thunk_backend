@@ -9,7 +9,7 @@ module.exports = [
     id: 2,
     name: 'Замена дисплея',
     price: 25000,
-    content: 'Стекло оригинал от Apple',
+    content: 'Дисплей оригинал от Apple',
   },
   {
     id: 3,
