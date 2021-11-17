@@ -81,23 +81,37 @@ router
         ctx.body = { message: 'No services with such id' };
       }
       return await next();
-    }, 1000);
+    }, 1);
   })
 
-  // .put('/api/services/:id', async (ctx, next) => {
-  //   return await responseWithDelay(async () => {
-  //     const { id } = ctx.params;
-  //     const service = services.find((service) => service.id == id);
+  .put('/api/services/:id', async (ctx, next) => {
+    return await responseWithDelay(async () => {
+      const { id } = ctx.params;
+      const serviceIndex = services.findIndex((service) => service.id == id);
 
-  //     if (service) {
-  //       ctx.body = service;
-  //     } else {
-  //       ctx.status = 400;
-  //       ctx.body = { message: 'No services with such id' };
-  //     }
-  //     return await next();
-  //   }, 1000);
-  // })
+      if (serviceIndex === -1) {
+        ctx.status = 400;
+        ctx.body = { message: 'No services with such id' };
+        return await next();
+      }
+
+      const { name, price, content } = JSON.parse(ctx.request.body);
+
+      if (
+        typeof name === 'string' &&
+        typeof content === 'string' &&
+        typeof price === 'number' &&
+        price >= 10
+      ) {
+        services[serviceIndex] = { id, name, price, content };
+        ctx.body = services[serviceIndex];
+      } else {
+        ctx.status = 400;
+        ctx.body = { message: 'Invalid data' };
+      }
+      return await next();
+    }, 1000);
+  })
 
   .delete('/api/services/:id', async (ctx, next) => {
     return await responseWithDelay(async () => {
