@@ -1,8 +1,8 @@
 const http = require('http');
-// const path = require('path');
+const path = require('path');
 const Koa = require('koa');
 const koaBody = require('koa-body');
-// const serve = require('koa-static');
+const serve = require('koa-static');
 const Router = require('koa-router');
 const cors = require('koa2-cors');
 const uuid = require('uuid');
@@ -11,7 +11,7 @@ const app = new Koa();
 const router = new Router();
 
 const services = require('./services');
-// const publicDirPath = path.join(__dirname, '/public');
+const publicDirPath = path.join(__dirname, '/public');
 
 app.use(
   cors({
@@ -131,6 +131,7 @@ router
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+app.use(serve(publicDirPath));
 
 const port = process.env.PORT || 7070;
 const server = http.createServer(app.callback());
