@@ -36,6 +36,8 @@ async function responseWithDelay(callback, delay) {
 }
 
 router
+  // быстрый и простой костыль для решения одной проблемы
+  .redirect('/services', '/')
   .get('/api/services', async (ctx, next) => {
     return await responseWithDelay(async () => {
       const servicesWithoutContent = services.map(
