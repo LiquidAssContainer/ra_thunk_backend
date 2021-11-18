@@ -1,15 +1,22 @@
 {
   "name": "ra_thunk_backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
   "main": "server.js",
   "scripts": {
     "prestart": "npm install",
     "start": "forever server.js",
     "watch": "forever -w server.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiquidAssContainer/ra_thunk_backend.git"
+  },
+  "author": "LiquidAssContainer",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LiquidAssContainer/ra_thunk_backend/issues"
+  },
+  "homepage": "https://github.com/LiquidAssContainer/ra_thunk_backend#readme",
   "dependencies": {
     "forever": "^1.0.0",
     "koa": "^2.7.0",
@@ -17,5 +24,8 @@
     "koa-router": "^7.4.0",
     "koa2-cors": "^2.0.6",
     "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": "11.x"
   }
 }
