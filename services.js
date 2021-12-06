@@ -23,4 +23,10 @@ module.exports = [
     price: 2500,
     content: 'Микрофон оригинал от Apple',
   },
+  {
+    id: '5',
+    name: 'Замена импланта',
+    price: 2500,
+    content: 'Имплант мозга оригинал от Apple',
+  },
 ];

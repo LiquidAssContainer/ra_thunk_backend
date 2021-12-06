@@ -28,19 +28,17 @@ app.use(
   }),
 );
 
-async function responseWithDelay(callback, delay) {
-  await new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-  return await callback();
-}
-
 router
   .get('/api/services', async (ctx, next) => {
     return await responseWithDelay(async () => {
+      const { fortune } = ctx.query;
+      console.log(fortune);
       const servicesWithoutContent = services.map(
         ({ content, ...service }) => service,
       );
+      if (fortune !== undefined) {
+        return fortuneFn(ctx, servicesWithoutContent);
+      }
       ctx.body = servicesWithoutContent;
       return await next();
     }, 1000);
@@ -71,10 +69,14 @@ router
 
   .get('/api/services/:id', async (ctx, next) => {
     return await responseWithDelay(async () => {
+      const { fortune } = ctx.query;
       const { id } = ctx.params;
       const service = services.find((service) => service.id == id);
 
       if (service) {
+        if (fortune !== undefined) {
+          return fortuneFn(ctx, service);
+        }
         ctx.body = service;
       } else {
         ctx.status = 400;
@@ -127,7 +129,48 @@ router
       }
       return await next();
     }, 100);
+  })
+
+  .get('/api/search', async (ctx, next) => {
+    // поиск примитивный, но большего не надо
+    return await responseWithDelay(async () => {
+      const { q: query } = ctx.query;
+
+      const servicesWithoutContent = services.map(
+        ({ content, ...service }) => service,
+      );
+      const filteredServices = servicesWithoutContent.filter((service) => {
+        const serviceName = service.name.toLowerCase();
+        const queryString = query.toLowerCase();
+        return serviceName.includes(queryString);
+      });
+
+      ctx.body = filteredServices;
+      return await next();
+    }, 10);
   });
+
+async function responseWithDelay(callback, delay) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+  return await callback();
+}
+
+function fortuneFn(ctx, body = null, status = 200) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.25) {
+        ctx.response.status = status;
+        ctx.response.body = body;
+        resolve();
+        return;
+      }
+
+      reject(new Error('Something bad happened'));
+    }, 1 * 1000);
+  });
+}
 
 app.use(router.routes());
 app.use(router.allowedMethods());
